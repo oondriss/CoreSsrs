@@ -5,14 +5,34 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CoreSsrs.Models;
+using AlanJuden.MvcReportViewer;
+using System.Net;
+using System.ServiceModel;
 
 namespace CoreSsrs.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : ReportController
     {
+        protected override ICredentials NetworkCredentials => new NetworkCredential()
+        {
+            UserName="otadanai",
+            Domain="OS",
+            Password="Ondris.0926"
+        };
+
+        protected override HttpClientCredentialType ClientCredentialType => HttpClientCredentialType.Ntlm;
+        
+        protected override string ReportServerUrl => "http://astajer-nb/ReportServer";
+
         public IActionResult Index()
         {
-            return View();
+            var model = GetReportViewerModel(Request);
+            model.AjaxLoadInitialReport = true;
+            //model.ClientCredentialType = System.ServiceModel.HttpClientCredentialType.Basic;
+            //model.Credentials = new ClientCredidential(@"OS\otadanai", "Ondris.0926");
+            model.ReportPath = "/WakeUpReport";
+
+            return View(model);
         }
 
         public IActionResult About()
